@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+</head>
+<style>
+    body {
+        background-color: darkgrey;
+    }
+</style>
+
+<body>
+    <div id="messages">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="message" placeholder="Message">
+    <button id="sendBtn">Send</button>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var socket = io.connect('http://localhost:5000');
+            socket.on('connect', function() {
+                socket.send('User has connected!');
+            });
+            socket.on('message', function(data) {
+                $('#messages').append($('<p>').text(data));
+            });
+            $('#sendBtn').on('click', (function(data) {
+                var message = $('#username').val() + ': ' + $('#message').val();
+                socket.send(message);
+                $('#message').val('');
+                $('#messages').append($('<p>').text(message));
+            }));
+        })
+    </script>
+</body>
+
+</html>
